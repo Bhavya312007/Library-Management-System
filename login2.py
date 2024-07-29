@@ -13,7 +13,7 @@ def main():
             username = input("Enter your username: ")
             password = input("Enter your password: ")
             hashed_password = hashlib.sha1(password.encode()).hexdigest()
-            cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, hashed_password))
+            cursor.execute("SELECT user_level FROM users WHERE username = %s AND password = %s", (username, hashed_password))
             if cursor.rowcount > 0:
                 print("Login successful")
                 print("Welcome " + username)

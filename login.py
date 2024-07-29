@@ -39,7 +39,7 @@ if connection.is_connected():
         hashed_password = hashlib.sha1(password.encode()).hexdigest()
         print(hashed_password)
         cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, hashed_password))
-        cursor.fetchall()
+        cursor.fetchone()
         print(cursor.rowcount)
         if cursor.rowcount > 0:
             print("Login successful")
