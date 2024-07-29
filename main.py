@@ -1,15 +1,21 @@
 import login
-conn= login.conn
+
 
 def main():
-    log= login()
-    if log==1:
-        print("Welcome to Advanced Library System")
-        print("Welcome Admin")
+    login.login()
 
-    elif log==3:
-        print("Welcome to Advanced Library System")
-        print("Welcome User")
+    log= login.log
+
+    if log!= None:
+        user_level = log[0]
+        if user_level == 1:
+            print("------------------------------------------------------")
+            print("        Welcome to Advanced Library System")
+            print("------------------------------------------------------")
+            print("Welcome Admin")
+        elif user_level == 3:
+            print("Welcome to Advanced Library System")
+            print("Welcome User")
     else:
         print("Login failed")
         print("Please try again")

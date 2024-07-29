@@ -1,2 +1,0 @@
-   raise ProgrammingError("Cursor is not connected", 2055) from err
-mysql.connector.errors.ProgrammingError: 2055: Cursor is not connected

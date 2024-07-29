@@ -33,6 +33,8 @@ if connection.is_connected():
 
     def login():
         global log
+        global username
+
         print("Welcome to Advanced Library System")
         print("Login to your account")
         username = input("Enter your username: ")
@@ -46,14 +48,16 @@ if connection.is_connected():
         if cursor.rowcount > 0:
             print("Login successful")
             print("Welcome " + username)
+            # return log
         else:
             print("Login failed")
             print("Please try again")
             login()
 
-    login()
+    # login()
 
-    cursor.close()
-    connection.close()
+    # cursor.close()
+    # connection.close()
 else:
     print("Failed to connect to the database.")
+
