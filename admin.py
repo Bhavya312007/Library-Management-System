@@ -1,5 +1,6 @@
 import conn
 import hashlib
+import login
 
 connection = conn.connect()
 
@@ -8,6 +9,20 @@ if connection.is_connected():
 
     def admin():
         print("Admin Page")
+        print("1. User Settings")
+        print("2. Book Settings")
+        print("3. Logout")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            user()
+        elif choice == '2':
+            page()
+        elif choice == '3':
+            logout()
+        else:
+            print("Invalid choice")
+            admin()
         
 
         
@@ -19,6 +34,7 @@ if connection.is_connected():
         print("3. Delete User")
         print("4. Update User")
         print("5. Logout")
+        print("6. Main Menu")
         choice = input("Enter your choice: ")
 
         if choice == '1':
@@ -31,6 +47,8 @@ if connection.is_connected():
             update_user()
         elif choice == '5':
             logout()
+        elif choice == '6':
+            admin()
         else:
             print("Invalid choice")
             user()
@@ -41,6 +59,7 @@ if connection.is_connected():
         print("3. Delete Book")
         print("4. Update Book")
         print("5. Logout")
+        print("6. Main Menu")
         choice = input("Enter your choice: ")
 
         if choice == '1':
@@ -53,6 +72,11 @@ if connection.is_connected():
             update_book()
         elif choice == '5':
             logout()
+        elif choice == '6':
+            admin()
+        else:
+            print("Invalid choice")
+            page()
 
     def add_user():
         print("Add User")
@@ -92,5 +116,45 @@ if connection.is_connected():
         print("User updated successfully")
         user()
 
+    def add_book():
+        print("Add Book")
+        title = input("Enter title: ")
+        author = input("Enter author: ")
+        category = input("Enter category: ")
+        quantity = input("Enter quantity: ")
+        cursor.execute("INSERT INTO books (title, author) VALUES (%s, %s)", (title, author))
+        connection.commit()
+        print("Book added successfully")
+        page()
+
+    def view_books():
+        print("View Books")
+        cursor.execute("SELECT * FROM books")
+        books = cursor.fetchall()
+        for book in books:
+            print(book)
+        page()
     
+    def delete_book():
+        print("Delete Book")
+        title = input("Enter title: ")
+        cursor.execute("DELETE FROM books WHERE title = %s", (title,))
+        connection.commit()
+        print("Book deleted successfully")
+        page()
+
+    def update_book():
+        print("Update Book")
+        title = input("Enter title: ")
+        author = input("Enter author: ")
+        category = input("Enter category: ")
+        quantity = input("Enter quantity: ")
+        cursor.execute("UPDATE books SET author = %s, category = %s, quantity = %s WHERE title = %s", (author, category, quantity, title))
+        connection.commit()
+        print("Book updated successfully")
+        page()
+
+    def logout():
+        print("Logout")
+        login()
 

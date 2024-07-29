@@ -13,7 +13,7 @@ def main():
             print("        Welcome to Advanced Library System")
             print("------------------------------------------------------")
             print("Welcome Admin")
-        elif user_level == 3:
+        elif user_level == 2:
             print("Welcome to Advanced Library System")
             print("Welcome User")
     else:
