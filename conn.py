@@ -1,7 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 
-def connect(host='localhost', user='root', password='', database='reportdesk'):
+def connect(host='localhost', user='root', password='', database='library'):
     try:
         connection = mysql.connector.connect(host=host,
                                              user=user,
