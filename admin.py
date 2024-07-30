@@ -96,11 +96,10 @@ if connection.is_connected():
         
     def view_users():
         print("View Users")
-        cursor.execute("SELECT * FROM users")
+        cursor.execute("SELECT * FROM users where user_level = 2")
         users = cursor.fetchall()
         for user in users:
             print(user)
-        user()
     
     def delete_user():
         print("Delete User")
@@ -112,10 +111,10 @@ if connection.is_connected():
 
     def update_user():
         print("Update User")
-        username = input("Enter username: ")
-        password = input("Enter password: ")
+        username = input("Enter username of the User: ")
+        password = input("Enter password For Change: ")
         hashed_password = hashlib.sha1(password.encode()).hexdigest()
-        user_level = input("Enter user level: ")
+        user_level = input("Enter user level To Change: ")
         cursor.execute("UPDATE users SET password = %s, user_level = %s WHERE username = %s", (hashed_password, user_level, username))
         connection.commit()
         print("User updated successfully")
@@ -123,11 +122,12 @@ if connection.is_connected():
 
     def add_book():
         print("Add Book")
-        title = input("Enter title: ")
+        bookno = input("Enter bookno: ")
+        name = input("Enter name: ")
         author = input("Enter author: ")
         category = input("Enter category: ")
         quantity = input("Enter quantity: ")
-        cursor.execute("INSERT INTO books (title, author) VALUES (%s, %s)", (title, author))
+        cursor.execute("INSERT INTO books (bookno,name, author, category, quantity) VALUES (%s, %s,%s, %s,%s)", (bookno,name, author, category, quantity))
         connection.commit()
         print("Book added successfully")
         page()
@@ -142,19 +142,19 @@ if connection.is_connected():
     
     def delete_book():
         print("Delete Book")
-        title = input("Enter title: ")
-        cursor.execute("DELETE FROM books WHERE title = %s", (title,))
+        name = input("Enter Bookno: ")
+        cursor.execute("DELETE FROM books WHERE bookno = %s", (name,))
         connection.commit()
         print("Book deleted successfully")
         page()
 
     def update_book():
         print("Update Book")
-        title = input("Enter title: ")
+        name = input("Enter name: ")
         author = input("Enter author: ")
         category = input("Enter category: ")
         quantity = input("Enter quantity: ")
-        cursor.execute("UPDATE books SET author = %s, category = %s, quantity = %s WHERE title = %s", (author, category, quantity, title))
+        cursor.execute("UPDATE books SET author = %s, category = %s, quantity = %s WHERE name = %s", (author, category, quantity, name))
         connection.commit()
         print("Book updated successfully")
         page()
@@ -166,3 +166,6 @@ if connection.is_connected():
 
 
 # admin()
+
+
+admin()

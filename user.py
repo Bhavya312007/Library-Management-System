@@ -1,7 +1,7 @@
 import conn
 import login
 import hashlib
-import main
+# import main
 
 connection = conn.connect()
 
@@ -55,6 +55,7 @@ if connection.is_connected():
         old_password = input("Enter your old password: ")
         new_password = input("Enter your new password: ")
         confirm_password = input("Confirm your new password: ")
+        old_password = hashlib.sha1(old_password.encode()).hexdigest()
         if new_password == confirm_password:
             cursor.execute("SELECT password FROM users WHERE username = %s", (login.username,))
             password = cursor.fetchone()[0]
@@ -73,8 +74,8 @@ if connection.is_connected():
 
     def search_books():
         print("Search Books")
-        search = input("Enter book title or author: ")
-        cursor.execute("SELECT * FROM books WHERE title LIKE %s OR author LIKE %s", ('%' + search + '%', '%' + search + '%'))
+        search = input("Enter book name or author: ")
+        cursor.execute("SELECT * FROM books WHERE name LIKE %s OR author LIKE %s", ('%' + search + '%', '%' + search + '%'))
         books = cursor.fetchall()
         for book in books:
             print(book)
@@ -82,13 +83,13 @@ if connection.is_connected():
 
     def borrow_books():
         print("Borrow Books")
-        book_id = input("Enter book ID: ")
-        cursor.execute("SELECT * FROM books WHERE book_id = %s", (book_id,))
+        bookid = input("Enter book ID: ")
+        cursor.execute("SELECT * FROM books WHERE bookid = %s", (bookid,))
         book = cursor.fetchone()
         if book != None:
             if book[4] == 0:
-                cursor.execute("INSERT INTO borrow (username, book_id) VALUES (%s, %s)", (login.username, book_id))
-                cursor.execute("UPDATE books SET available = 1 WHERE book_id = %s", (book_id,))
+                cursor.execute("INSERT INTO borrow (username, bookid) VALUES (%s, %s)", (login.username, bookid))
+                cursor.execute("UPDATE books SET available = 1 WHERE bookid = %s", (bookid,))
                 connection.commit()
                 print("Book borrowed successfully")
                 user()
@@ -101,12 +102,12 @@ if connection.is_connected():
 
     def return_books():
         print("Return Books")
-        book_id = input("Enter book ID: ")
-        cursor.execute("SELECT * FROM borrow WHERE username = %s AND book_id = %s", (login.username, book_id))
+        bookid = input("Enter book ID: ")
+        cursor.execute("SELECT * FROM borrow WHERE username = %s AND bookid = %s", (login.username, bookid))
         borrow = cursor.fetchone()
         if borrow != None:
-            cursor.execute("DELETE FROM borrow WHERE username = %s AND book_id = %s", (login.username, book_id))
-            cursor.execute("UPDATE books SET available = 0 WHERE book_id = %s", (book_id,))
+            cursor.execute("DELETE FROM borrow WHERE username = %s AND bookid = %s", (login.username, bookid))
+            cursor.execute("UPDATE books SET available = 0 WHERE bookid = %s", (bookid,))
             connection.commit()
             print("Book returned successfully")
             user()
@@ -116,11 +117,11 @@ if connection.is_connected():
 
     def renew_books():
         print("Renew Books")
-        book_id = input("Enter book ID: ")
-        cursor.execute("SELECT * FROM borrow WHERE username = %s AND book_id = %s", (login.username, book_id))
+        bookid = input("Enter book ID: ")
+        cursor.execute("SELECT * FROM borrow WHERE username = %s AND bookid = %s", (login.username, bookid))
         borrow = cursor.fetchone()
         if borrow != None:
-            cursor.execute("UPDATE borrow SET date_borrowed = CURRENT_DATE WHERE username = %s AND book_id = %s", (login.username, book_id))
+            cursor.execute("UPDATE borrow SET date_borrowed = CURRENT_DATE WHERE username = %s AND bookid = %s", (login.username, bookid))
             connection.commit()
             print("Book renewed successfully")
             user()
@@ -144,3 +145,6 @@ if connection.is_connected():
     def logout():
         print("Logout")
         # main.main()
+
+
+user()
