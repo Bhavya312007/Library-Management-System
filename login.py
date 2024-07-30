@@ -30,6 +30,8 @@ import hashlib
 
 connection = conn.connect()
 
+
+
 if connection.is_connected():
     cursor = connection.cursor()
 

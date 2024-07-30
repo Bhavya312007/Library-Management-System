@@ -4,7 +4,8 @@ import hashlib
 # import main
 
 connection = conn.connect()
-
+username = login.username
+print(username)
 if connection.is_connected():
     cursor = connection.cursor()
 
@@ -56,8 +57,9 @@ if connection.is_connected():
         new_password = input("Enter your new password: ")
         confirm_password = input("Confirm your new password: ")
         old_password = hashlib.sha1(old_password.encode()).hexdigest()
+        user = login.username
         if new_password == confirm_password:
-            cursor.execute("SELECT password FROM users WHERE username = %s", (login.username,))
+            cursor.execute("SELECT password FROM users WHERE username = %s", (user,))
             password = cursor.fetchone()[0]
             if password == old_password:
                 new_password = hashlib.sha1(new_password.encode()).hexdigest()
