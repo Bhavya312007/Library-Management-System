@@ -112,4 +112,32 @@ if connection.is_connected():
             user()
 
     def renew_books():
-        
+        print("Renew Books")
+        book_id = input("Enter book ID: ")
+        cursor.execute("SELECT * FROM borrow WHERE username = %s AND book_id = %s", (login.username, book_id))
+        borrow = cursor.fetchone()
+        if borrow != None:
+            cursor.execute("UPDATE borrow SET date_borrowed = CURRENT_DATE WHERE username = %s AND book_id = %s", (login.username, book_id))
+            connection.commit()
+            print("Book renewed successfully")
+            user()
+        else:
+            print("Book not borrowed")
+            user()
+
+    def fine_status():
+        print("Fine Status")
+        cursor.execute("SELECT * FROM borrow WHERE username = %s AND date_borrowed < CURRENT_DATE - INTERVAL 28 DAY", (login.username,))
+        fines = cursor.fetchall()
+        if len(fines) == 0:
+            print("You have no fine")
+        else:
+            print("You have fine for the following books")
+            for fine in fines:
+               print(fine)
+            user()
+            print("Pay Fine in Accounts Block")
+
+    def logout():
+        print("Logout")
+        login.login()

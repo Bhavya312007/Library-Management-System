@@ -84,6 +84,11 @@ if connection.is_connected():
         password = input("Enter password: ")
         hashed_password = hashlib.sha1(password.encode()).hexdigest()
         user_level = input("Enter user level: ")
+        if user_level == '1' or user_level == '2':
+            pass
+        else:
+            print("Invalid user level")
+            add_user()
         cursor.execute("INSERT INTO users (username, password, user_level) VALUES (%s, %s, %s)", (username, hashed_password, user_level))
         connection.commit()
         print("User added successfully")
@@ -158,3 +163,4 @@ if connection.is_connected():
         print("Logout")
         login()
 
+# admin()
