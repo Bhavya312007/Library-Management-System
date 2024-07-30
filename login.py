@@ -25,6 +25,8 @@
 
 import conn
 import hashlib
+# import admin
+# import user
 
 connection = conn.connect()
 
@@ -48,6 +50,23 @@ if connection.is_connected():
         if cursor.rowcount > 0:
             print("Login successful")
             print("Welcome " + username)
+        #     if log!= None:
+        #         user_level = log[0]
+        #         if user_level == 1:
+        #            print("------------------------------------------------------")
+        #            print("        Welcome to Advanced Library System")
+        #            print("------------------------------------------------------")
+        #            print("Welcome Admin")
+        #            admin.admin()
+
+        #         elif user_level == 2:
+        #            print("Welcome to Advanced Library System")
+        #            print("Welcome User")
+        #            user.user()
+            # else:
+            #     print("Login failed")
+            #     print("Please try again")
+            #     login()
             # return log
         else:
             print("Login failed")

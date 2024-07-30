@@ -1,6 +1,6 @@
 import conn
 import hashlib
-import main
+
 
 connection = conn.connect()
 
@@ -161,6 +161,8 @@ if connection.is_connected():
 
     def logout():
         print("Logout")
-        main.main()
+        # login.login()
+        # main.main()
+
 
 # admin()

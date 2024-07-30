@@ -143,4 +143,4 @@ if connection.is_connected():
 
     def logout():
         print("Logout")
-        main.main()
+        # main.main()
