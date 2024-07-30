@@ -1,5 +1,7 @@
 import conn
 import login
+import hashlib
+import main
 
 connection = conn.connect()
 
@@ -57,6 +59,7 @@ if connection.is_connected():
             cursor.execute("SELECT password FROM users WHERE username = %s", (login.username,))
             password = cursor.fetchone()[0]
             if password == old_password:
+                new_password = hashlib.sha1(new_password.encode()).hexdigest()
                 cursor.execute("UPDATE users SET password = %s WHERE username = %s", (new_password, login.username))
                 connection.commit()
                 print("Password changed successfully")
@@ -140,4 +143,4 @@ if connection.is_connected():
 
     def logout():
         print("Logout")
-        login.login()
+        main.main()
