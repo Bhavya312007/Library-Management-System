@@ -104,7 +104,7 @@ if connection.is_connected():
         if book:
             if book[4] > 0:
                 quantity=book[4]-1
-                cursor.execute("INSERT INTO borrows (user_id, bookno,borrow_date) VALUES (%s, %s,%s,)", (user_id, bookid, today,))
+                cursor.execute("INSERT INTO borrows (user_id, bookno ,borrow_date) VALUES (%s, %s,%s)", (user_id, bookid, today))
                 cursor.execute("UPDATE books SET quantity = %s WHERE bookno = %s", (quantity,bookid,))
                 connection.commit()
                 print("Book borrowed successfully")
@@ -123,9 +123,12 @@ if connection.is_connected():
         bookid = input("Enter book ID: ")
         cursor.execute("SELECT * FROM borrows WHERE user_id = %s AND bookno = %s", (user_id, bookid))
         borrow = cursor.fetchone()
+        
+        print(borrow)
         if borrow != None:
             cursor.execute("DELETE FROM borrows WHERE user_id = %s AND bookno = %s", (user_id, bookid))
-            cursor.execute("UPDATE books SET quantity = 0 WHERE bookno = %s", (bookid,))
+            cursor.execute("UPDATE books SET quantity = quantity + 1 WHERE bookno = %s", (bookid,))
+
             connection.commit()
             print("Book returned successfully")
             user()
@@ -140,8 +143,9 @@ if connection.is_connected():
         bookid = input("Enter book ID: ")
         cursor.execute("SELECT * FROM borrows WHERE user_id = %s AND bookno = %s", (user_id, bookid))
         borrow = cursor.fetchone()
+        print(borrow)
         if borrow != None:
-            cursor.execute("UPDATE borrows SET date_borrowed = CURRENT_DATE WHERE user_id = %s AND bookno = %s", (user_id, bookid))
+            cursor.execute("UPDATE borrows SET borrow_date = %s WHERE user_id = %s AND bookno = %s", (today, user_id, bookid))
             connection.commit()
             print("Book renewed successfully")
             user()
@@ -153,7 +157,7 @@ if connection.is_connected():
         cursor.execute("SELECT id FROM users WHERE username = %s", (login.username,))
         user_id = cursor.fetchone()[0]
         print("Fine Status")
-        cursor.execute("SELECT * FROM borrows WHERE user_id = %s AND date_borrowed < CURRENT_DATE - INTERVAL 28 DAY", (user_id,))
+        cursor.execute("SELECT * FROM borrows WHERE user_id = %s AND borrow_date < CURRENT_DATE - INTERVAL 28 DAY", (user_id,))
         fines = cursor.fetchall()
         if len(fines) == 0:
             print("You have no fine")
@@ -163,6 +167,7 @@ if connection.is_connected():
                print(fine)
             user()
             print("Pay Fine in Accounts Block")
+        user()
 
     def logout():
         print("Logout")
