@@ -98,8 +98,9 @@ if connection.is_connected():
         print("View Users")
         cursor.execute("SELECT * FROM users where user_level = 2")
         users = cursor.fetchall()
-        for user in users:
-            print(user)
+        for u in users:
+            print(u)
+        user()
     
     def delete_user():
         print("Delete User")
@@ -161,6 +162,7 @@ if connection.is_connected():
 
     def logout():
         print("Logout")
+        connection.close()
         # login.login()
         # main.main()
 
@@ -168,4 +170,4 @@ if connection.is_connected():
 # admin()
 
 
-admin()
+# admin()

@@ -7,9 +7,11 @@ def main():
     login.login()
 
     log= login.log
-
+    print(log)
     if log!= None:
         user_level = log[0]
+        print(user_level)
+        print(log)
         if user_level == 1:
             print("------------------------------------------------------")
             print("        Welcome to Advanced Library System")

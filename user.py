@@ -1,14 +1,21 @@
 import conn
 import login
 import hashlib
+from datetime import date
+today = date.today()
+formatted_date = today.strftime('%B %d, %Y')
+print(formatted_date)
 # import main
+# from login import username
 
 connection = conn.connect()
-username = login.username
-print(username)
+# user = login.username
+# print(user)
+
 if connection.is_connected():
     cursor = connection.cursor()
-
+    
+    
     def user():
         print("User Page")
         print("1. User Settings")
@@ -58,6 +65,7 @@ if connection.is_connected():
         confirm_password = input("Confirm your new password: ")
         old_password = hashlib.sha1(old_password.encode()).hexdigest()
         user = login.username
+        print(user)
         if new_password == confirm_password:
             cursor.execute("SELECT password FROM users WHERE username = %s", (user,))
             password = cursor.fetchone()[0]
@@ -66,7 +74,7 @@ if connection.is_connected():
                 cursor.execute("UPDATE users SET password = %s WHERE username = %s", (new_password, login.username))
                 connection.commit()
                 print("Password changed successfully")
-                logout()
+                # logout()
             else:
                 print("Incorrect password")
                 change_password()
@@ -84,14 +92,20 @@ if connection.is_connected():
         user()
 
     def borrow_books():
+        cursor.execute("SELECT id FROM users WHERE username = %s", (login.username,))
+        user_id = cursor.fetchone()[0]
         print("Borrow Books")
         bookid = input("Enter book ID: ")
-        cursor.execute("SELECT * FROM books WHERE bookid = %s", (bookid,))
+        print(bookid)
+        cursor.execute("SELECT * FROM books WHERE bookno = %s", (bookid,))
         book = cursor.fetchone()
-        if book != None:
-            if book[4] == 0:
-                cursor.execute("INSERT INTO borrow (username, bookid) VALUES (%s, %s)", (login.username, bookid))
-                cursor.execute("UPDATE books SET available = 1 WHERE bookid = %s", (bookid,))
+        print(book)
+        
+        if book:
+            if book[4] > 0:
+                quantity=book[4]-1
+                cursor.execute("INSERT INTO borrows (user_id, bookno,borrow_date) VALUES (%s, %s,%s,)", (user_id, bookid, today,))
+                cursor.execute("UPDATE books SET quantity = %s WHERE bookno = %s", (quantity,bookid,))
                 connection.commit()
                 print("Book borrowed successfully")
                 user()
@@ -103,13 +117,15 @@ if connection.is_connected():
             user()
 
     def return_books():
+        cursor.execute("SELECT id FROM users WHERE username = %s", (login.username,))
+        user_id = cursor.fetchone()[0]
         print("Return Books")
         bookid = input("Enter book ID: ")
-        cursor.execute("SELECT * FROM borrow WHERE username = %s AND bookid = %s", (login.username, bookid))
+        cursor.execute("SELECT * FROM borrows WHERE user_id = %s AND bookno = %s", (user_id, bookid))
         borrow = cursor.fetchone()
         if borrow != None:
-            cursor.execute("DELETE FROM borrow WHERE username = %s AND bookid = %s", (login.username, bookid))
-            cursor.execute("UPDATE books SET available = 0 WHERE bookid = %s", (bookid,))
+            cursor.execute("DELETE FROM borrows WHERE user_id = %s AND bookno = %s", (user_id, bookid))
+            cursor.execute("UPDATE books SET quantity = 0 WHERE bookno = %s", (bookid,))
             connection.commit()
             print("Book returned successfully")
             user()
@@ -118,12 +134,14 @@ if connection.is_connected():
             user()
 
     def renew_books():
+        cursor.execute("SELECT id FROM users WHERE username = %s", (login.username,))
+        user_id = cursor.fetchone()[0]
         print("Renew Books")
         bookid = input("Enter book ID: ")
-        cursor.execute("SELECT * FROM borrow WHERE username = %s AND bookid = %s", (login.username, bookid))
+        cursor.execute("SELECT * FROM borrows WHERE user_id = %s AND bookno = %s", (user_id, bookid))
         borrow = cursor.fetchone()
         if borrow != None:
-            cursor.execute("UPDATE borrow SET date_borrowed = CURRENT_DATE WHERE username = %s AND bookid = %s", (login.username, bookid))
+            cursor.execute("UPDATE borrows SET date_borrowed = CURRENT_DATE WHERE user_id = %s AND bookno = %s", (user_id, bookid))
             connection.commit()
             print("Book renewed successfully")
             user()
@@ -132,8 +150,10 @@ if connection.is_connected():
             user()
 
     def fine_status():
+        cursor.execute("SELECT id FROM users WHERE username = %s", (login.username,))
+        user_id = cursor.fetchone()[0]
         print("Fine Status")
-        cursor.execute("SELECT * FROM borrow WHERE username = %s AND date_borrowed < CURRENT_DATE - INTERVAL 28 DAY", (login.username,))
+        cursor.execute("SELECT * FROM borrows WHERE user_id = %s AND date_borrowed < CURRENT_DATE - INTERVAL 28 DAY", (user_id,))
         fines = cursor.fetchall()
         if len(fines) == 0:
             print("You have no fine")
@@ -146,7 +166,8 @@ if connection.is_connected():
 
     def logout():
         print("Logout")
+        connection.close()
         # main.main()
 
 
-user()
+# user()
