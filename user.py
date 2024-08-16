@@ -5,12 +5,10 @@ from datetime import date
 today = date.today()
 formatted_date = today.strftime('%B %d, %Y')
 print(formatted_date)
-# import main
-# from login import username
+
 
 connection = conn.connect()
-# user = login.username
-# print(user)
+
 
 if connection.is_connected():
     cursor = connection.cursor()
@@ -172,7 +170,7 @@ if connection.is_connected():
     def logout():
         print("Logout")
         connection.close()
-        # main.main()
+
 
 
 # user()

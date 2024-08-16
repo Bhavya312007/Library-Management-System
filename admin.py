@@ -163,11 +163,7 @@ if connection.is_connected():
     def logout():
         print("Logout")
         connection.close()
-        # login.login()
-        # main.main()
 
-
-# admin()
 
 
 # admin()
