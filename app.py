@@ -1,57 +1,11 @@
-<<<<<<< Updated upstream
-import login
-import admin
-import user
-=======
 import mysql.connector
 from mysql.connector import Error
 import hashlib
-import login  # Assuming 'login.py' is a module you have
-import admin  # Assuming 'admin.py' is a module you have
-import user  # Assuming 'user.py' is a module you have
->>>>>>> Stashed changes
-
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 app = Flask(__name__)
-
 app.secret_key = '6268121321'
 
-<<<<<<< Updated upstream
-
-@app.route('/')
-def main():   
-    
-  while True:
-    login.login()
-
-    log= login.log
-    print(log)
-    if log!= None:
-        user_level = log[0]
-        print(user_level)
-        print(log)
-        if user_level == 1:
-            # print("------------------------------------------------------")
-            # print("        Welcome to Advanced Library System")
-            # print("------------------------------------------------------")
-            # print("Welcome Admin")
-            return redirect(url_for('admin.html'))
-
-        elif user_level == 2:
-            # print("Welcome to Advanced Library System")
-            # print("Welcome User")
-            return redirect(url_for('user.html'))
-    else:
-        print("Login failed")
-        print("Please try again")
-        main()
-
-
-        
-    return render_template('index.html')
-
-=======
 # Database connection function
 def connect(host='localhost', db_user='root', db_password='', database='library'):
     try:
@@ -81,15 +35,10 @@ def main():
 
 # Home route
 @app.route('/home')
->>>>>>> Stashed changes
 def home():
     if 'username' in session:
         return render_template('index.html')
     return redirect(url_for('login'))
-<<<<<<< Updated upstream
-if __name__ == '__main__':
-    app.run(debug=True)
-=======
 
 # Login route
 @app.route('/login', methods=['GET', 'POST'])
@@ -144,9 +93,197 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
 
+# Functions for user management
+@app.route('/admin/view_users')
+def view_users():
+    if 'username' not in session or session.get('log')[0] != 1:
+        return redirect(url_for('login'))
 
+    connection = connect()
+    if not connection:
+        return "Failed to connect to the database.", 500
+    
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE user_level = 2")
+    users = cursor.fetchall()
+    cursor.close()
+    connection.close()
 
+    return render_template('view_users.html', users=users)
+
+@app.route('/admin/add_user', methods=['GET', 'POST'])
+def add_user():
+    if 'username' not in session or session.get('log')[0] != 1:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        connection = connect()
+        if not connection:
+            return "Failed to connect to the database.", 500
+        
+        cursor = connection.cursor()
+        username = request.form['username']
+        password = request.form['password']
+        hashed_password = hashlib.sha1(password.encode()).hexdigest()
+        user_level = request.form['user_level']
+
+        cursor.execute("INSERT INTO users (username, password, user_level) VALUES (%s, %s, %s)", 
+                       (username, hashed_password, user_level))
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        flash('User added successfully!', 'success')
+        return redirect(url_for('view_users'))
+
+    return render_template('add_user.html')
+
+@app.route('/admin/delete_user/<username>', methods=['POST'])
+def delete_user(username):
+    if 'username' not in session or session.get('log')[0] != 1:
+        return redirect(url_for('login'))
+
+    connection = connect()
+    if not connection:
+        return "Failed to connect to the database.", 500
+    
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM users WHERE username = %s", (username,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    flash('User deleted successfully!', 'success')
+    return redirect(url_for('view_users'))
+
+@app.route('/admin/update_user/<username>', methods=['GET', 'POST'])
+def update_user(username):
+    if 'username' not in session or session.get('log')[0] != 1:
+        return redirect(url_for('login'))
+
+    connection = connect()
+    if not connection:
+        return "Failed to connect to the database.", 500
+    
+    cursor = connection.cursor()
+
+    if request.method == 'POST':
+        password = request.form['password']
+        hashed_password = hashlib.sha1(password.encode()).hexdigest()
+        user_level = request.form['user_level']
+
+        cursor.execute("UPDATE users SET password = %s, user_level = %s WHERE username = %s", 
+                       (hashed_password, user_level, username))
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        flash('User updated successfully!', 'success')
+        return redirect(url_for('view_users'))
+
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    user = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    return render_template('update_user.html', user=user)
+
+# Functions for book management
+@app.route('/admin/view_books')
+def view_books():
+    if 'username' not in session or session.get('log')[0] != 1:
+        return redirect(url_for('login'))
+
+    connection = connect()
+    if not connection:
+        return "Failed to connect to the database.", 500
+    
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM books")
+    books = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return render_template('view_books.html', books=books)
+
+@app.route('/admin/add_book', methods=['GET', 'POST'])
+def add_book():
+    if 'username' not in session or session.get('log')[0] != 1:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        connection = connect()
+        if not connection:
+            return "Failed to connect to the database.", 500
+        
+        cursor = connection.cursor()
+        bookno = request.form['bookno']
+        name = request.form['name']
+        author = request.form['author']
+        category = request.form['category']
+        quantity = request.form['quantity']
+
+        cursor.execute("INSERT INTO books (bookno, name, author, category, quantity) VALUES (%s, %s, %s, %s, %s)", 
+                       (bookno, name, author, category, quantity))
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        flash('Book added successfully!', 'success')
+        return redirect(url_for('view_books'))
+
+    return render_template('add_book.html')
+
+@app.route('/admin/delete_book/<bookno>', methods=['POST'])
+def delete_book(bookno):
+    if 'username' not in session or session.get('log')[0] != 1:
+        return redirect(url_for('login'))
+
+    connection = connect()
+    if not connection:
+        return "Failed to connect to the database.", 500
+    
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM books WHERE bookno = %s", (bookno,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    flash('Book deleted successfully!', 'success')
+    return redirect(url_for('view_books'))
+
+@app.route('/admin/update_book/<bookno>', methods=['GET', 'POST'])
+def update_book(bookno):
+    if 'username' not in session or session.get('log')[0] != 1:
+        return redirect(url_for('login'))
+
+    connection = connect()
+    if not connection:
+        return "Failed to connect to the database.", 500
+    
+    cursor = connection.cursor()
+
+    if request.method == 'POST':
+        name = request.form['name']
+        author = request.form['author']
+        category = request.form['category']
+        quantity = request.form['quantity']
+
+        cursor.execute("UPDATE books SET name = %s, author = %s, category = %s, quantity = %s WHERE bookno = %s", 
+                       (name, author, category, quantity, bookno))
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        flash('Book updated successfully!', 'success')
+        return redirect(url_for('view_books'))
+
+    cursor.execute("SELECT * FROM books WHERE bookno = %s", (bookno,))
+    book = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    return render_template('update_book.html', book=book)
 
 if __name__ == '__main__':
     app.run(debug=True)
->>>>>>> Stashed changes
