@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fine Status</title>
+</head>
+<body>
+    <h1>Fine Status</h1>
+    {% if fines %}
+        <p>You have fines for the following books:</p>
+        <ul>
+        {% for fine in fines %}
+            <li>Book ID: {{ fine[2] }}, Borrow Date: {{ fine[3] }}</li>
+        {% endfor %}
+        </ul>
+        <p>Please pay your fines in the Accounts Block.</p>
+    {% else %}
+        <p>You have no fines.</p>
+    {% endif %}
+    <a href="{{ url_for('user_page') }}">Back to Dashboard</a>
+</body>
+</html>
