@@ -1,5 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
+from flask import Flask, render_template, request, redirect, url_for
+
+app = Flask(__name__)
 
 def connect(host='localhost', user='root', password='', database='library'):
     try:
@@ -9,11 +12,11 @@ def connect(host='localhost', user='root', password='', database='library'):
                                              database=database)
         if connection.is_connected():
             db_Info = connection.get_server_info()
-            print("Connected to MySQL Server version ", db_Info)
+            # print("Connected to MySQL Server version ", db_Info)
             cursor = connection.cursor()
             cursor.execute("select database();")
             record = cursor.fetchone()
-            print("You're connected to database: ", record)
+            # print("You're connected to database: ", record)
             return connection
 
     except Error as e:
