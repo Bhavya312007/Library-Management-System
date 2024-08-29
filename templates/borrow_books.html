@@ -1,17 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borrow Books</title>
-</head>
-<body>
-    <h1>Borrow Books</h1>
-    <form method="POST">
-        <label for="bookid">Enter Book ID:</label>
-        <input type="text" id="bookid" name="bookid" required>
-        <button type="submit">Borrow</button>
-    </form>
-    <a href="{{ url_for('user_page') }}">Back to Dashboard</a>
-</body>
-</html>
+<form method="POST">
+    <input type="text" name="book_id" placeholder="Enter Book ID" required>
+    <button type="submit">Borrow Book</button>
+</form>
+
+{% if books %}
+    <ul>
+    {% for book in books %}
+        <li>{{ book['bookno'] }} - {{ book['title'] }} ({{ book['quantity'] }} available)</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No books available for borrowing.</p>
+{% endif %}
