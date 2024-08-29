@@ -25,7 +25,7 @@ def connect(host='localhost', db_user='root', db_password='', database='library'
         print("Error while connecting to MySQL", e)
         return None
 connection = connect()
-cursor = connection.cursor()
+
 # Main route
 @app.route('/')
 def main():
@@ -73,41 +73,6 @@ def login():
     cursor.close()
     connection.close()
     return render_template('login.html')
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        hashed_password = hashlib.sha1(password.encode()).hexdigest()
-        
-        cursor.execute("SELECT user_level FROM users WHERE username = %s AND password = %s", (username, hashed_password))
-        log = cursor.fetchone()
-        
-        if log:
-            session['log'] = log
-            session['username'] = username
-            flash('Login successful!', 'success')
-            return redirect(url_for('main'))
-        else:
-            flash('Invalid credentials. Please try again.', 'danger')
-    
-        if user:
-            # Assuming 'user' contains a dictionary with 'id' and 'level'
-            session['log'] = [user['level'], user['id']]  # Example: [2, 1] for a standard user with ID 1
-            flash('Login successful!')
-            
-            # Redirect based on user level
-            if user['level'] == 1:
-                return redirect(url_for('admin_page'))
-            elif user['level'] == 2:
-                return redirect(url_for('user_page'))
-        else:
-            flash('Invalid username or password.')
-
-    return render_template('login.html')
-
 
 # Admin page route
 @app.route('/admin')
@@ -376,29 +341,9 @@ def user_view_books():
 # Route to borrow books
 @app.route('/borrow_books', methods=['GET', 'POST'])
 def borrow_books():
-    # Debugging: Check if 'log' is in session
-    if 'log' not in session:
-        flash('You need to log in first.')
-        print("Redirecting to login: 'log' not in session.")
-        return redirect(url_for('login'))
-
-    # Debugging: Check the contents of session['log']
-    print("Session log data:", session['log'])
-
-    # Ensure 'log' has at least two elements
-    if len(session['log']) < 2:
-        flash('Invalid session data.')
-        print("Redirecting to login: 'log' does not have at least two elements.")
-        return redirect(url_for('login'))
-
-    user_level = session['log'][0]
-    user_id = session['log'][1]  # Assuming the second element in 'log' is the user ID
-
-    # Only allow standard users to access this function
-    if user_level != 2:
-        flash('Access denied.')
-        print("Redirecting to login: User level is not 2 (standard user).")
-        return redirect(url_for('login'))
+    # Check if the user is logged in and is a standard user
+    if 'log' not in session or session['log'][0] != 2:  # Ensure user_level is 2 (standard user)
+        return redirect(url_for('login'))  # Redirect to login if not logged in or not a standard user
 
     # Establish a new database connection
     connection = connect()
@@ -406,6 +351,7 @@ def borrow_books():
         return "Failed to connect to the database.", 500
 
     cursor = connection.cursor(dictionary=True)
+    user_id = session['log'][0]  # Assuming the second element in 'log' is the user ID
 
     if request.method == 'POST':
         bookid = request.form.get('book_id')
@@ -413,9 +359,6 @@ def borrow_books():
         if bookid:  # Ensure book ID is provided
             cursor.execute("SELECT * FROM books WHERE bookno = %s", (bookid,))
             book = cursor.fetchone()
-
-            # Debugging: Check book result
-            print("Book fetched from database:", book)
 
             if book:
                 if book['quantity'] > 0:
@@ -439,9 +382,6 @@ def borrow_books():
     # Fetch available books for borrowing display
     cursor.execute("SELECT * FROM books WHERE quantity > 0")
     available_books = cursor.fetchall()
-
-    # Debugging: Check available books
-    print("Available books fetched from database:", available_books)
 
     # Close the cursor and connection
     cursor.close()
