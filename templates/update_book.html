@@ -4,22 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Book</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Update Book</h1>
-    <form method="POST">
-        <label for="bookno">Book Number:</label>
-        <input type="text" id="bookno" name="bookno" value="{{ book[0] }}" readonly><br><br>
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" value="{{ book[1] }}" required><br><br>
-        <label for="author">Author:</label>
-        <input type="text" id="author" name="author" value="{{ book[2] }}" required><br><br>
-        <label for="category">Category:</label>
-        <input type="text" id="category" name="category" value="{{ book[3] }}" required><br><br>
-        <label for="quantity">Quantity:</label>
-        <input type="number" id="quantity" name="quantity" value="{{ book[4] }}" required><br><br>
-        <button type="submit">Update Book</button>
-    </form>
-    <a href="{{ url_for('view_books') }}">Back to Books</a>
+    <div class="container mt-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('view_books') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 >Update Book</h1>
+            <span></span>
+        </div>
+
+        <form method="POST" class="border p-4 rounded shadow-sm">
+            <div class="form-group">
+                <label for="bookno">Book Number:</label>
+                <input type="text" id="bookno" name="bookno" class="form-control" value="{{ book[0] }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" class="form-control" value="{{ book[1] }}" required>
+            </div>
+            <div class="form-group">
+                <label for="author">Author:</label>
+                <input type="text" id="author" name="author" class="form-control" value="{{ book[2] }}" required>
+            </div>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <input type="text" id="category" name="category" class="form-control" value="{{ book[3] }}" required>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" class="form-control" value="{{ book[4] }}" required>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

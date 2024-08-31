@@ -4,17 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Settings</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Change Password</h1>
-    <form method="POST">
-        <label for="old_password">Old Password:</label>
-        <input type="password" id="old_password" name="old_password" required><br><br>
-        <label for="new_password">New Password:</label>
-        <input type="password" id="new_password" name="new_password" required><br><br>
-        <label for="confirm_password">Confirm New Password:</label>
-        <input type="password" id="confirm_password" name="confirm_password" required><br><br>
-        <button type="submit">Change Password</button>
-    </form>
+    <div class="container mt-5 bg-light p-4 rounded">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('user_page') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1>Change Password</h1>
+            <span></span>
+        </div>
+        <form method="POST">
+            <div class="form-group">
+                <label for="old_password">Old Password:</label>
+                <input type="password" id="old_password" name="old_password" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="new_password">New Password:</label>
+                <input type="password" id="new_password" name="new_password" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Confirm New Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

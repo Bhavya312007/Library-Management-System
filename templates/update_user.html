@@ -4,22 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update User</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Update User</h1>
-    <form method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" value="{{ user[0] }}" readonly><br><br>
-        <label for="password">New Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <label for="user_level">User Level:</label>
-        <select id="user_level" name="user_level">
-            <option value="1" {% if user[2] == 1 %}selected{% endif %}>Admin</option>
-            <option value="2" {% if user[2] == 2 %}selected{% endif %}>User</option>
-        </select><br><br>
-        <button type="submit">Update User</button>
-    </form>
-    <a href="{{ url_for('view_users') }}">Back to Users</a>
+    <div class="container mt-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="text-left mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <a href="{{ url_for('view_users') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+            </div>
+            <h1>Update User</h1>
+            <span></span>
+        </div>
+        <form method="POST" class="border p-4 rounded shadow-sm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" value="{{ user[1] }}" class="form-control" readonly>
+            </div>
+            <div class="form-group">
+                <label for="password">New Password:</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="user_level">User Level:</label>
+                <select id="user_level" name="user_level" class="form-control">
+                    <option value="2" {% if user[3] == 2 %}selected{% endif %}>User</option>
+                    <option value="1" {% if user[3] == 1 %}selected{% endif %}>Admin</option>
+                </select>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-    

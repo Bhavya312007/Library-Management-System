@@ -4,16 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Welcome to the User Dashboard</h1>
-    <ul>
-        <li><a href="{{ url_for('user_settings') }}">User Settings</a></li>
-        <li><a href="{{ url_for('borrow_books') }}">Borrow Books</a></li>
-        <li><a href="{{ url_for('return_books') }}">Return Books</a></li>
-        <li><a href="{{ url_for('renew_books') }}">Renew Books</a></li>
-        <li><a href="{{ url_for('fine_status') }}">Fine Status</a></li>
-        <li><a href="{{ url_for('logout') }}">Logout</a></li>
-    </ul>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">User : <span class='color-green'>{{ session['username'] }}</span></h1>
+        <div class="list-group">
+            <a href="{{ url_for('borrowed_books') }}" class="list-group-item list-group-item-action">View Books</a>
+            <a href="{{ url_for('borrow_books') }}" class="list-group-item list-group-item-action">Borrow Books</a>
+            <a href="{{ url_for('return_books') }}" class="list-group-item list-group-item-action">Return Books</a>
+            <a href="{{ url_for('renew_books') }}" class="list-group-item list-group-item-action">Renew Books</a>
+            <a href="{{ url_for('fine_status') }}" class="list-group-item list-group-item-action">Fine Status</a>
+            <a href="{{ url_for('user_settings') }}" class="list-group-item list-group-item-action">Change Password</a>
+            <a href="{{ url_for('logout') }}" class="list-group-item list-group-item-action">Logout</a>
+        </div>
+    </div>
 </body>
 </html>
