@@ -62,9 +62,13 @@ def login():
         cursor.execute("SELECT user_level FROM users WHERE username = %s AND password = %s", (username, hashed_password))
         log = cursor.fetchone()
         
+        cursor.execute("SELECT id,username FROM users WHERE username = %s AND password = %s", (username, hashed_password))
+        log2 = cursor.fetchone()
+        
         if log:
             session['log'] = log
             session['username'] = username
+            session['log2'] = log2
             flash('Login successful!', 'success')
             return redirect(url_for('main'))
         else:
@@ -132,7 +136,7 @@ def add_user():
         hashed_password = hashlib.sha1(password.encode()).hexdigest()
         user_level = request.form['user_level']
 
-        cursor.execute("INSERT INTO users (username, password, user_level) VALUES (%s, %s, %s)", 
+        cursor.execute("INSERT INTO users (username, password, user_level) VALUES (%s, \"%s\", %s);", 
                        (username, hashed_password, user_level))
         connection.commit()
         cursor.close()
@@ -143,8 +147,8 @@ def add_user():
 
     return render_template('add_user.html')
 
-@app.route('/admin/delete_user/<username>', methods=['POST'])
-def delete_user(username):
+@app.route('/admin/delete_user/<id>', methods=['POST'])
+def delete_user(id):
     if 'username' not in session or session.get('log')[0] != 1:
         return redirect(url_for('login'))
 
@@ -153,7 +157,7 @@ def delete_user(username):
         return "Failed to connect to the database.", 500
     
     cursor = connection.cursor()
-    cursor.execute("DELETE FROM users WHERE username = %s", (username,))
+    cursor.execute("DELETE FROM users WHERE id = %s", (id,))
     connection.commit()
     cursor.close()
     connection.close()
@@ -161,8 +165,8 @@ def delete_user(username):
     flash('User deleted successfully!', 'success')
     return redirect(url_for('view_users'))
 
-@app.route('/admin/update_user/<username>', methods=['GET', 'POST'])
-def update_user(username):
+@app.route('/admin/update_user/<id>', methods=['GET', 'POST'])
+def update_user(id):
     if 'username' not in session or session.get('log')[0] != 1:
         return redirect(url_for('login'))
 
@@ -177,8 +181,8 @@ def update_user(username):
         hashed_password = hashlib.sha1(password.encode()).hexdigest()
         user_level = request.form['user_level']
 
-        cursor.execute("UPDATE users SET password = %s, user_level = %s WHERE username = %s", 
-                       (hashed_password, user_level, username))
+        cursor.execute("UPDATE users SET password = %s, user_level = %s WHERE id = %s", 
+                       (hashed_password, user_level, id))
         connection.commit()
         cursor.close()
         connection.close()
@@ -186,7 +190,7 @@ def update_user(username):
         flash('User updated successfully!', 'success')
         return redirect(url_for('view_users'))
 
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    cursor.execute("SELECT * FROM users WHERE id = %s", (id,))
     user = cursor.fetchone()
     cursor.close()
     connection.close()
@@ -303,16 +307,25 @@ def user_settings():
     cursor = connection.cursor()
 
     if request.method == 'POST':
-        password = request.form['password']
-        hashed_password = hashlib.sha1(password.encode()).hexdigest()
+        oldPassword = request.form['old_password']
+        newPassword = request.form['new_password']
+        confirmPassword = request.form['confirm_password']
+        old_hashed_password = hashlib.sha1(oldPassword.encode()).hexdigest()
+        new_hashed_password = hashlib.sha1(newPassword.encode()).hexdigest()
 
-        cursor.execute("UPDATE users SET password = %s WHERE username = %s", 
-                       (hashed_password, session['username']))
+        cursor.execute("SELECT id,username FROM users WHERE username = %s AND password = %s", (session['username'], old_hashed_password))
+        if(cursor.fetchone()):
+            if(newPassword==confirmPassword):
+                cursor.execute("UPDATE users SET password = %s WHERE username = %s ;", (new_hashed_password, session['username']))
+                flash('Password updated successfully!', 'success')
+            else :
+                flash("New password and confirm password does not match.",'danger')
+        else :
+            flash("Incorrect old Password.",'danger')
         connection.commit()
-        cursor.close()
-        connection.close()
+        # cursor.close()
+        # connection.close()
 
-        flash('Password updated successfully!', 'success')
         return redirect(url_for('user_page'))
 
     cursor.execute("SELECT * FROM users WHERE username = %s", (session['username'],))
@@ -351,7 +364,6 @@ def borrow_books():
         return "Failed to connect to the database.", 500
 
     cursor = connection.cursor(dictionary=True)
-    user_id = session['log'][0]  # Assuming the second element in 'log' is the user ID
 
     if request.method == 'POST':
         bookid = request.form.get('book_id')
@@ -365,11 +377,11 @@ def borrow_books():
                     # Borrow the book
                     quantity = book['quantity'] - 1
                     try:
-                        cursor.execute("INSERT INTO borrows (user_id, bookno, borrow_date) VALUES (%s, %s, %s)",
-                                       (user_id, bookid, date.today()))
+                        cursor.execute("INSERT INTO borrows (user_id, bookno, borrow_date) VALUES (%s, %s, %s);",
+                                       (session['log2'][0],bookid, date.today()))
                         cursor.execute("UPDATE books SET quantity = %s WHERE bookno = %s", (quantity, bookid))
                         connection.commit()
-                        flash("Book borrowed successfully!")
+                        flash("Book borrowed successfully!","success")
                     except mysql.connector.Error as err:
                         flash(f"Error borrowing book: {err}")
                 else:
@@ -389,11 +401,36 @@ def borrow_books():
 
     return render_template('borrow_books.html', books=available_books)
 
+# Route to borrowed books
+@app.route('/borrowed_books')
+def borrowed_books():
+    # Check if the user is logged in and is a standard user
+    if 'log' not in session or session['log'][0] != 2:  # Ensure user_level is 2 (standard user)
+        return redirect(url_for('login'))  # Redirect to login if not logged in or not a standard user
+
+    # Establish a new database connection
+    connection = connect()
+    if not connection:
+        return "Failed to connect to the database.", 500
+
+    cursor = connection.cursor(dictionary=True)
+    user_id = session['log2'][0]
+
+    # Fetch available books for borrowing display
+    cursor.execute("SELECT borrows.bookno AS bookno,borrow_date,return_date,name,author,category,quantity FROM borrows,books WHERE borrows.user_id=%s AND borrows.bookno=books.bookno;",(user_id,))
+    borrowed_books = cursor.fetchall()
+
+    # Close the cursor and connection
+    cursor.close()
+    connection.close()
+
+    return render_template('borrowed_books.html', books=borrowed_books)
+
 # Route to return books
 @app.route('/return_books', methods=['GET', 'POST'])
 def return_books():
     if 'log' in session:
-        # Logic for returning books goes here
+        # Logic for returning books goes here            
         return render_template('return_books.html')
     else:
         flash('You need to log in first.')
