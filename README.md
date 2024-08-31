@@ -87,11 +87,9 @@ The **Library Management System** is a Python-based application designed to mana
 Library-Management-System/
 │
 ├── Library-Management-System/
-│   ├── admin.py          # Admin functionalities
-│   ├── conn.py           # Database connection settings
-│   ├── login.py          # Login functionalities
-│   ├── main.py           # Entry point of the application
-│   ├── user.py           # User functionalities
+│   ├── static/           # Css files for html templates
+│   ├── template/         # Html Templates to render
+│   ├── venv/             # Virtual Environment Folder
 │   ├── app.py            # Main File
 │   ├── library.sql       # SQL file to set up the database
 │   └── README.md         # Project documentation
