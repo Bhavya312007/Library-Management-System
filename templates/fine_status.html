@@ -4,20 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fine Status</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Fine Status</h1>
-    {% if fines %}
-        <p>You have fines for the following books:</p>
-        <ul>
-        {% for fine in fines %}
-            <li>Book ID: {{ fine[2] }}, Borrow Date: {{ fine[3] }}</li>
-        {% endfor %}
-        </ul>
-        <p>Please pay your fines in the Accounts Block.</p>
-    {% else %}
-        <p>You have no fines.</p>
-    {% endif %}
-    <a href="{{ url_for('user_page') }}">Back to Dashboard</a>
+    <div class="container mt-5">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('user_page') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1>Fine Status</h1>
+            <span></span>
+        </div>
+        {% if fines %}
+            <p class="alert alert-warning">You have fines for the following books:</p>
+            <ul class="list-group mb-4">
+                {% for fine in fines %}
+                    <li class="list-group-item">
+                        Book ID: {{ fine[2] }}, Borrow Date: {{ fine[3] }}
+                    </li>
+                {% endfor %}
+            </ul>
+            <p class="alert alert-info">Please pay your fines in the Accounts Block.</p>
+        {% else %}
+            <p class="alert alert-success">You have no fines.</p>
+        {% endif %}
+    </div>
 </body>
 </html>

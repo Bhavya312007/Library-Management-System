@@ -16,34 +16,17 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+        <!-- Header with Back Button -->
         <div class="mb-3 d-flex justify-content-between align-items-center">
             <a href="{{ url_for('user_page') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <h1>Borrow a Book</h1>
+            <h1 class="m-0">Borrowed Books</h1>
             <span></span>
         </div>
-        <form method="POST" class="mb-4">
-            <div class="form-group">
-                <input type="text" name="book_id" class="form-control" placeholder="Enter Book ID" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Borrow Book</button>
-        </form>
-
-        <!--{% if books %}
-            <h2 class="mb-3">Available Books</h2>
-            <ul class="list-group">
-                {% for book in books %}
-                <li class="list-group-item">
-                    {{ book['bookno'] }} - {{ book['name'] }} ({{ book['quantity'] }} available)
-                </li>
-            {% endfor %}
-            </ul>
-            {% else %}
-            <p class="text-center mt-3">No books available for borrowing.</p>
-        {% endif %} -->
         
-        <h2 class="mb-3">Available Books</h2>
+        <!-- Borrowed Books Table -->
+        {% if books %}
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
                 <tr>
@@ -52,6 +35,8 @@
                     <th>Author</th>
                     <th>Category</th>
                     <th>Quantity</th>
+                    <th>Borrow Date</th>
+                    <th>Return Date</th>
                 </tr>
             </thead>
             <tbody>
@@ -62,10 +47,18 @@
                     <td>{{ book['author'] }}</td>
                     <td>{{ book['category'] }}</td>
                     <td>{{ book['quantity'] }}</td>
+                    <td>{{ book['borrow_date'] }}</td>
+                    <td>{% if book['return_date'] == None %} - {% else %} {{ book['return_date'] }} {% endif %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        <!-- Message if no books are borrowed -->
+        <div class="alert alert-info" role="alert">
+            No books borrowed.
+        </div>
+        {% endif %}
     </div>
 </body>
 </html>

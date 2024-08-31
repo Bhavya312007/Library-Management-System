@@ -4,13 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Admin Dashboard</h1>
-    <ul>
-        <li><a href="{{ url_for('view_users') }}">Manage Users</a></li>
-        <li><a href="{{ url_for('view_books') }}">Manage Books</a></li>
-    </ul>
-    <a href="{{ url_for('logout') }}">Logout</a>
+    <div class="container mt-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h1 class="text-center">Admin Dashboard</h1>
+        <ul class="nav nav-pills nav-fill my-4">
+            <li class="nav-item">
+                <a class="nav-link btn btn-outline-primary" href="{{ url_for('view_users') }}">Manage Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link btn btn-outline-primary" href="{{ url_for('view_books') }}">Manage Books</a>
+            </li>
+        </ul>
+        <div class="text-center">
+            <a class="btn btn-danger" href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
 </body>
 </html>
